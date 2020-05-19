@@ -1,35 +1,26 @@
 # Enter your code here. Read input from STDIN. Print output to STDOUT
-from sklearn import linear_model
-reg = linear_model.LinearRegression()
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline
 
-# Read input
-train = list(map(int,raw_input().split(" ")))
-list_train = []
+# Read the training data
+F,N = map(int,input().split())
+train = np.array([input().split() for _ in range(N)],float)
+X_train = train[:,0:F]
+y_train =train[:,-1]
 
+# Read the test data
+T = int(input())
+X_test = np.array([input().split() for _ in range(T)],float)
 
-# Read in the values training data
-for i in range(0,train[1]):
-    list_train.append(list(map(float,raw_input().split(" "))))
+# Model
+pol = PolynomialFeatures(degree=3,include_bias=False)
+model = LinearRegression()
+model.fit(pol.fit_transform(X_train),y_train)
 
-# Split Dict_train into features and target
-feature_train = []
-target_train = []
+# Prediction
+y_test = model.predict(pol.transform(X_test))
 
-for i in range(0,len(list_train)):
-    feature_train.append(list_train[i][0:train[0]])
-    target_train.append(list_train[i][train[0]])
-    
-# Read in values of test data
-test = int(raw_input())
-list_test = []
-
-for i in range(0,test):
-    list_test.append(list(map(float,raw_input().split(" "))))
-
-
-# Fit the model
-reg.fit(feature_train,target_train)
-
-#predict the values
-for i in range(0,len(list_test)):
-    print round(reg.predict(list_test[i]),2)
+print('\n'.join(list(map(str,y_test))))
